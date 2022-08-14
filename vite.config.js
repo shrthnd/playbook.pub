@@ -19,6 +19,7 @@ module.exports = {
         name: "playbook.pub",
         short_name: "playbook.pub",
         lang: "en-US",
+        // id: "http://localhost:8080/",
         start_url: "/",
         icons: [
           {

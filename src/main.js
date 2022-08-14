@@ -1,8 +1,6 @@
 import './style.css'
 
-document.querySelector('#app').innerHTML = `
-  <h1>playbook.pub</h1>
-`
+document.querySelector('#app').innerHTML = `<h1>playbook.pub</h1>`;
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js', {scope: './'}).then(
