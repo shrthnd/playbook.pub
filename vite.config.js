@@ -1,5 +1,7 @@
 import path from "path"; 
+import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa'
+import solidPlugin from 'vite-plugin-solid';
 
 module.exports = {
   root: path.join(__dirname, "src"),
@@ -14,6 +16,7 @@ module.exports = {
     }
   },
   plugins: [
+    solidPlugin(),
     VitePWA({
       manifest: {
         name: "playbook.pub",

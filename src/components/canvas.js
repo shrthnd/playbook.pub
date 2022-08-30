@@ -63,6 +63,7 @@ class CustomCanvas extends HTMLElement {
     // this.addToolbar(); 
     this.setCanvasDimensions();
     this.draw();
+    
   }
 
   addStyle() {
