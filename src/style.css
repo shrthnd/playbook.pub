@@ -20,11 +20,47 @@ body {
   height: 100%;
 }
 
-hyper-canvas {
-  display: block;
-  position: absolute;
-  top: 0;
+custom-canvas {
+  max-height: 95vh;
+}
+
+#toolbar {
+  /* position: absolute;
+  top: auto;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1; */
+  max-height: 5vh;
+  display: flex;
+  padding: .5rem;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  width: auto;
+}
+#toolbar button {}
+#toolbar button + button {
+  margin-left: .5rem;
+}
+
+#tabs {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .5rem;
+  z-index: 1;
+}
+#tabs button {
+  border: 1px solid #000;
+  padding: .25rem .5rem;
+  font-size: 1rem;
+}
+#tabs button + button {
+  margin-left: .5rem;
+}
+#tabs button.active {
+  background: #000;
+  color: #fff;
 }

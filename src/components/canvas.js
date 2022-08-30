@@ -1,11 +1,9 @@
-import Toolbar from './toolbar';
-customElements.define('custom-canvas-toolbar', Toolbar);
 class CustomCanvas extends HTMLElement {
   canvas = null;
   ctx = null;
   
   theme = {
-    active: 'light',
+    active: 'dark',
     dark: {
       bg: '#123456',
       text: '#fedcba',
@@ -19,7 +17,7 @@ class CustomCanvas extends HTMLElement {
   brush = {
     strokeStyle: this.theme[this.theme.active].text,
     fillStyle: 'transparent',
-    lineWidth: 10,
+    lineWidth: 5,
     lineCap: 'round',
   }
 
@@ -28,7 +26,7 @@ class CustomCanvas extends HTMLElement {
   painting = false;
   
   createCanvas() {
-    this.canvas = document.createElement('canvas');
+    this.canvas = this.canvas || document.createElement('canvas');
     // this.canvas.style.display = 'block';
     this.ctx = this.canvas.getContext('2d');
   }
@@ -37,8 +35,6 @@ class CustomCanvas extends HTMLElement {
   constructor() {
     super();
     this.createCanvas(); 
-    window.addEventListener('resize', this.setCanvasDimensions);
-    // window.addEventListener('keyup', (e) => { console.log(e); });
 
     this.canvas.addEventListener('mousedown', this.handleBrushDown);
     this.canvas.addEventListener('touchstart', this.handleTouchStart, { passive: true });
@@ -51,19 +47,20 @@ class CustomCanvas extends HTMLElement {
 
     this.canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault(); 
-      // return false; 
     });
   }
 
   // called when element is attached to the DOM
   connectedCallback() {
-    const shadow = this.attachShadow({ mode: 'open' });
-    shadow.append(this.canvas);
-    this.addStyle(); 
-    // this.addToolbar(); 
     this.setCanvasDimensions();
-    this.draw();
-    
+    window.addEventListener('resize', this.setCanvasDimensions);
+    if (!this.shadowRoot) {
+      const shadow = this.attachShadow({ mode: 'open' });
+      shadow.append(this.canvas);
+      this.addStyle(); 
+      this.setCanvasDimensions();
+      this.draw();
+    }
   }
 
   addStyle() {
@@ -75,11 +72,6 @@ class CustomCanvas extends HTMLElement {
       }
     `;
     this.canvas.parentNode.append(style);
-  }
-
-  addToolbar() {
-    const toolbar = document.createElement('custom-canvas-toolbar'); 
-    this.canvas.parentNode.append(toolbar);
   }
 
   setCanvasDimensions = () => {
@@ -171,11 +163,10 @@ class CustomCanvas extends HTMLElement {
   }
 
   disconnectedCallback() {
-
+    window.removeEventListener('resize', this.setCanvasDimensions);
   }
 
   adoptedCallback() {
-
   }
 }
 
