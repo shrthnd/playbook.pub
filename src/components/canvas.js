@@ -1,42 +1,86 @@
-class HyperCanvas extends HTMLElement {
+import Toolbar from './toolbar';
+customElements.define('custom-canvas-toolbar', Toolbar);
+class CustomCanvas extends HTMLElement {
   canvas = null;
   ctx = null;
-  background = '#123456';
-  foreground = '#fedcba';
-  layers = [];
-  activeLayer = 0;
+  
+  theme = {
+    active: 'light',
+    dark: {
+      bg: '#123456',
+      text: '#fedcba',
+    },
+    light: {
+      bg: '#fedcba',
+      text: '#123456',
+    }
+  }
+
   brush = {
-    strokeStyle: this.foreground,
+    strokeStyle: this.theme[this.theme.active].text,
     fillStyle: 'transparent',
     lineWidth: 10,
     lineCap: 'round',
   }
+
+  layers = [];
+  activeLayer = 0;
   painting = false;
   
+  createCanvas() {
+    this.canvas = document.createElement('canvas');
+    // this.canvas.style.display = 'block';
+    this.ctx = this.canvas.getContext('2d');
+  }
+
   // called when component is invoked
   constructor() {
     super();
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.display = 'block';
-    this.ctx = this.canvas.getContext('2d');
+    this.createCanvas(); 
     window.addEventListener('resize', this.setCanvasDimensions);
     // window.addEventListener('keyup', (e) => { console.log(e); });
+
     this.canvas.addEventListener('mousedown', this.handleBrushDown);
-    this.canvas.addEventListener('touchstart', this.handleTouchStart);
+    this.canvas.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+
     this.canvas.addEventListener('mouseup', this.handleBrushUp);
     this.canvas.addEventListener('touchend', this.handleTouchEnd);
+    
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
-    this.canvas.addEventListener('touchmove', this.handleTouchMove);
+    this.canvas.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+
+    this.canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); 
+      // return false; 
+    });
   }
 
   // called when element is attached to the DOM
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'open' });
     shadow.append(this.canvas);
+    this.addStyle(); 
+    // this.addToolbar(); 
     this.setCanvasDimensions();
     this.draw();
   }
-  
+
+  addStyle() {
+    const style = document.createElement('style');
+    style.textContent = `
+      canvas { 
+        position: relative; 
+        display: block;
+      }
+    `;
+    this.canvas.parentNode.append(style);
+  }
+
+  addToolbar() {
+    const toolbar = document.createElement('custom-canvas-toolbar'); 
+    this.canvas.parentNode.append(toolbar);
+  }
+
   setCanvasDimensions = () => {
     this.canvas.width = this.parentElement.offsetWidth;
     this.canvas.height = this.parentElement.offsetHeight;
@@ -54,7 +98,7 @@ class HyperCanvas extends HTMLElement {
   handleBrushUp = (e) => {
     this.painting = false;
     this.activeLayer += 1;
-  };
+  }
 
   handleBrushDown = (e) => {
     this.painting = true;
@@ -63,7 +107,7 @@ class HyperCanvas extends HTMLElement {
     const y = e.clientY || e.touches[0].pageY - this.canvas.offsetTop;
     // add first point
     this.layers[this.activeLayer] = [{ x, y }];
-  };
+  }
 
   handleTouchMove = (e) => {
     // push point to activeLayer if mouseDown
@@ -74,7 +118,7 @@ class HyperCanvas extends HTMLElement {
     }
   }
 
-  handleTouchStart = this.handleBrushDown; 
+  handleTouchStart = this.handleBrushDown;
 
   handleTouchEnd = this.handleBrushUp;
 
@@ -85,7 +129,7 @@ class HyperCanvas extends HTMLElement {
       mx1: (layer[i+1].x + layer[i+2].x) / 2,
       my1: (layer[i+1].y + layer[i+2].y) / 2
     });
-  };
+  }
 
   paintCurves = (layer) => {
     this.ctx.strokeStyle = this.brush.strokeStyle; 
@@ -95,9 +139,10 @@ class HyperCanvas extends HTMLElement {
       if (i === 0) {
         this.ctx.beginPath();
         this.ctx.moveTo(layer[0].x, layer[0].y);
-        if (layer.length === 1) {
-          this.ctx.arc(layer[0].x, layer[0].y, 0, 0, 2 * Math.PI, true);
-        }
+        if (layer.length === 1) 
+         this.ctx.arc(layer[0].x, layer[0].y, 0, 0, 2 * Math.PI, true);
+        if (layer.length === 2 || layer.length === 3)
+         this.ctx.lineTo(layer[layer.length-1].x, layer[layer.length-1].y); 
       }
 
       if (i > 0 && i < layer.length - 3) {
@@ -109,7 +154,7 @@ class HyperCanvas extends HTMLElement {
   }
 
   draw = () => {
-    this.ctx.fillStyle = this.background;
+    this.ctx.fillStyle = this.theme[this.theme.active].bg;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fill();
     for (let j = 0; j < this.layers.length; j++) {
@@ -118,6 +163,10 @@ class HyperCanvas extends HTMLElement {
       this.paintCurves(layer);
     }
     requestAnimationFrame(this.draw);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(name, oldValue, newValue);
   }
 
   disconnectedCallback() {
@@ -129,4 +178,4 @@ class HyperCanvas extends HTMLElement {
   }
 }
 
-export default HyperCanvas;
+export default CustomCanvas;
