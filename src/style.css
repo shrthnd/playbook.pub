@@ -6,6 +6,9 @@
 
 html, body {
   height: 100%;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
 }
 
 body {
@@ -47,18 +50,25 @@ custom-canvas {
 #tabs {
   position: absolute;
   display: flex;
+  flex-wrap: wrap;
+  width: 100%;
   align-items: center;
   justify-content: center;
-  padding: .5rem;
+  /* padding: .5rem; */
   z-index: 1;
+  pointer-events: none;
+}
+#tabs button:last-of-type {
+  margin-left: auto;
 }
 #tabs button {
   border: 1px solid #000;
   padding: .25rem .5rem;
   font-size: 1rem;
+  pointer-events: all;
 }
 #tabs button + button {
-  margin-left: .5rem;
+  /* margin-left: .5rem; */
 }
 #tabs button.active {
   background: #000;

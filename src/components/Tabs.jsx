@@ -1,23 +1,10 @@
 const Tabs = (props) => {
   const {
     active,
-    setActive,
     pages,
-    setPages,
+    handleNewPage,
+    handleTabClick,
   } = props;
-
-  const handleNewPage = (e) => {
-    const next = [...pages()];
-    const slug = prompt("Page title?", `Untitled ${next.length}`);
-    next.push({
-      slug,
-      document: <custom-canvas width="" height="" />
-    });
-    setPages(next);
-  }
-  const handleTabClick = (index) => {
-    setActive(index);
-  }
 
   const renderTab = (page, index) => {
     return (
