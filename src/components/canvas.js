@@ -5,7 +5,7 @@ class CustomCanvas extends HTMLElement {
   theme = {
     active: 'dark',
     dark: {
-      bg: '#000',
+      bg: '#373a86',
       text: '#fff',
     },
     light: {
@@ -67,6 +67,7 @@ class CustomCanvas extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = `
       canvas { 
+        box-sizing: border-box;
         position: relative; 
         display: block;
       }
@@ -75,15 +76,16 @@ class CustomCanvas extends HTMLElement {
   }
 
   setCanvasDimensions = () => {
-    this.canvas.width = this.parentElement.offsetWidth;
-    this.canvas.height = this.parentElement.offsetHeight;
+    console.log(this.offsetWidth, this.offsetHeight)
+    this.canvas.width = this.offsetWidth;
+    this.canvas.height = this.offsetHeight;
   }
 
   handleMouseMove = (e) => {
     // push point to activeLayer if mouseDown
     if (this.painting) {
-      const x = e.clientX - this.canvas.offsetLeft;
-      const y = e.clientY - this.canvas.offsetTop;
+      const x = e.clientX - this.offsetLeft;
+      const y = e.clientY - this.offsetTop;
       this.layers[this.activeLayer].push({ x, y });
     }
   }
@@ -96,8 +98,8 @@ class CustomCanvas extends HTMLElement {
   handleBrushDown = (e) => {
     this.painting = true;
     // create a new layer if activeLayer is not empty
-    const x = (e.clientX || e.touches[0].pageX) - this.canvas.offsetLeft;
-    const y = (e.clientY || e.touches[0].pageY) - this.canvas.offsetTop;
+    const x = (e.clientX || e.touches[0].pageX) - this.offsetLeft;
+    const y = (e.clientY || e.touches[0].pageY) - this.offsetTop;
     // add first point
     this.layers[this.activeLayer] = [{ x, y }];
   }

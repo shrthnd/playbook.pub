@@ -2,20 +2,25 @@ const Tabs = (props) => {
   const renderTab = (page, index) => {
     let timer = false;
     let longTap = false;
+
+    const handleMouseTapDown = (e) => {
+      timer = setTimeout(() => {
+        longTap = !longTap; 
+        props.handlers.handleTabRemove(index);
+      }, 300);
+    };
+
+    const handleMouseTapUp = (e) => {
+      if (!longTap) props.handlers.handleTabClick(index);
+      longTap = false;
+      clearTimeout(timer);
+    }; 
+
     return (
       <button 
         class={ index == props.active() ? 'active' : null } 
-        onMouseDown={(e) => {
-          timer = setTimeout(() => {
-            longTap = !longTap; 
-            props.handlers.handleTabRemove(index);
-          }, 300);
-        }}
-        onMouseUp={(e) => {
-          if (!longTap) props.handlers.handleTabClick(index);
-          longTap = false;
-          clearTimeout(timer);
-        }}
+        onPointerDown={handleMouseTapDown}
+        onPointerUp={handleMouseTapUp}
       >
         {page.slug}
       </button>
