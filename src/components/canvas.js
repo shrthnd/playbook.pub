@@ -5,17 +5,17 @@ class CustomCanvas extends HTMLElement {
   theme = {
     active: 'dark',
     dark: {
-      bg: '#373a86',
-      text: '#fff',
+      secondary: '#373a86',
+      primary: '#ffffff',
     },
     light: {
-      bg: '#fedcba',
-      text: '#123456',
+      secondary: '#fedcba',
+      primary: '#123456',
     }
   }
 
   brush = {
-    strokeStyle: this.theme[this.theme.active].text,
+    strokeStyle: this.theme[this.theme.active].primary,
     fillStyle: 'transparent',
     lineWidth: 5,
     lineCap: 'round',
@@ -27,7 +27,6 @@ class CustomCanvas extends HTMLElement {
   
   createCanvas() {
     this.canvas = this.canvas || document.createElement('canvas');
-    // this.canvas.style.display = 'block';
     this.ctx = this.canvas.getContext('2d');
   }
 
@@ -46,7 +45,7 @@ class CustomCanvas extends HTMLElement {
     this.canvas.addEventListener('touchmove', this.handleTouchMove, { passive: true });
 
     this.canvas.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); 
+      e.preventDefault();
     });
   }
 
@@ -65,7 +64,7 @@ class CustomCanvas extends HTMLElement {
 
   addStyle() {
     const style = document.createElement('style');
-    style.textContent = `
+    style.primaryContent = `
       canvas { 
         box-sizing: border-box;
         position: relative; 
@@ -76,7 +75,6 @@ class CustomCanvas extends HTMLElement {
   }
 
   setCanvasDimensions = () => {
-    console.log(this.offsetWidth, this.offsetHeight)
     this.canvas.width = this.offsetWidth;
     this.canvas.height = this.offsetHeight;
   }
@@ -84,8 +82,8 @@ class CustomCanvas extends HTMLElement {
   handleMouseMove = (e) => {
     // push point to activeLayer if mouseDown
     if (this.painting) {
-      const x = e.clientX - this.offsetLeft;
-      const y = e.clientY - this.offsetTop;
+      const x = (e.clientX - this.offsetLeft || e.touches[0].pageX);
+      const y = (e.clientY - this.offsetTop || e.touches[0].pageY);
       this.layers[this.activeLayer].push({ x, y });
     }
   }
@@ -98,8 +96,8 @@ class CustomCanvas extends HTMLElement {
   handleBrushDown = (e) => {
     this.painting = true;
     // create a new layer if activeLayer is not empty
-    const x = (e.clientX || e.touches[0].pageX) - this.offsetLeft;
-    const y = (e.clientY || e.touches[0].pageY) - this.offsetTop;
+    const x = (e.clientX - this.offsetLeft || e.touches[0].pageX - this.offsetLeft);
+    const y = (e.clientY - this.offsetTop || e.touches[0].pageY - this.offsetTop);
     // add first point
     this.layers[this.activeLayer] = [{ x, y }];
   }
@@ -107,8 +105,8 @@ class CustomCanvas extends HTMLElement {
   handleTouchMove = (e) => {
     // push point to activeLayer if mouseDown
     if (this.painting) {
-      const x = e.changedTouches[0].clientX;
-      const y = e.changedTouches[0].clientY;
+      const x = e.changedTouches[0].clientX - this.offsetLeft;
+      const y = e.changedTouches[0].clientY - this.offsetTop;
       this.layers[this.activeLayer].push({ x, y });
     }
   }
@@ -127,7 +125,7 @@ class CustomCanvas extends HTMLElement {
   }
 
   paintCurves = (layer) => {
-    this.ctx.strokeStyle = this.brush.strokeStyle; 
+    this.ctx.strokeStyle = this.theme[this.theme.active].primary; 
     this.ctx.lineCap = this.brush.lineCap;
     this.ctx.lineWidth = this.brush.lineWidth;
     for(let i = 0; i <= layer.length; i++) {
@@ -149,7 +147,7 @@ class CustomCanvas extends HTMLElement {
   }
 
   draw = () => {
-    this.ctx.fillStyle = this.theme[this.theme.active].bg;
+    this.ctx.fillStyle = this.theme[this.theme.active].secondary;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fill();
     for (let j = 0; j < this.layers.length; j++) {

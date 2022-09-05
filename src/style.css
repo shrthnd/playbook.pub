@@ -27,6 +27,11 @@ button {
   font-size: 1rem;
   pointer-events: all;
   line-height: 1;
+  cursor: pointer;
+}
+button:hover, button:focus {
+  background-color: #fb3fb0;
+  color: #fff;
 }
 
 #app {
@@ -42,17 +47,25 @@ button {
   bottom: auto;
   transform: translateY(-50%);
   z-index: 1;
-  min-height: 50vh;
   padding: 1rem;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   background: #000;
-  width: auto;
+  color: #fff;
+  width: 100%;
+  min-width: 130px;
+  max-width: 150px;
 }
-
+#toolbar label {
+  margin: 1rem 0 .25rem;
+}
+#toolbar input {
+  display: block;
+  width: 100%;
+}
 #toolbar button {
   display: block;
   padding: .5rem;
@@ -61,12 +74,12 @@ button {
 }
 
 #toolbar button + button {
-  margin-top: .5rem;
+  margin-top: 1rem;
 }
 
 #tabs {
   position: absolute;
-  bottom: 0;
+  top: 0;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -77,8 +90,8 @@ button {
   pointer-events: none;
 }
 #tabs button:not(:last-child) {
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
 #tabs button:last-child {
   padding: .25rem .5rem;
@@ -105,10 +118,10 @@ button {
 
 #page > custom-canvas {
   position: absolute;
-  top: .5rem;
+  top:  2.25rem;
   left: .5rem;
   right: .5rem;
-  bottom:  2.25rem;
+  bottom: .5rem;
   border-radius: .3rem;
   overflow: hidden;
 }

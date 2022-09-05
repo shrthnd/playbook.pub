@@ -5,8 +5,14 @@ import Toolbar from './Toolbar';
 import Page from './Page';
 
 const App = () => {
+  // page state
   const [pages, setPages] = createSignal([]);
   const [active, setActive] = createSignal(0);
+
+  // toolbar state
+  const [activeCanvas, setActiveCanvas] = createSignal(false);
+  const [primary, setPrimary] = createSignal('#000000');
+  const [secondary, setSecondary] = createSignal('#ffffff');
   
   const handleNewPage = (e) => {
     const next = [...pages()];
@@ -46,7 +52,8 @@ const App = () => {
       return false;
 
     allPages.splice(index, 1);
-    setPages([...allPages]);      
+    setPages([...allPages]);
+    
     if (currentIndex >= allPages.length)
       setActive(allPages.length-1);
   }
@@ -55,6 +62,12 @@ const App = () => {
     if (active() === index) 
       handleTabRename(index);
     setActive(index);
+  }
+
+  const handleTheme = () => {
+    const theme = activeCanvas().theme;
+    setPrimary(theme[theme.active].primary);
+    setSecondary(theme[theme.active].secondary);
   }
   
   const handlers = {
@@ -65,14 +78,35 @@ const App = () => {
   }
 
   onMount(() => {
-    if (!pages().length) handleNewPage();
+    if (!pages().length)
+      handleNewPage();
+
+    setTimeout(() => {
+      setActiveCanvas(pages()[active()].document[0]);
+      handleTheme();
+    }, 0);
   });
 
   return (
     <>
-      <Tabs pages={pages} active={active} handlers={handlers} />
-      {/* <Toolbar /> */}
-      <Page pages={pages} active={active} handlers={handlers} />
+      <Tabs 
+        pages={pages} 
+        active={active} 
+        handlers={handlers}
+      />
+      <Toolbar 
+        activeCanvas={activeCanvas}
+        primary={primary} 
+        secondary={secondary} 
+        setPrimary={setPrimary} 
+        setSecondary={setSecondary}
+        handleTheme={handleTheme}
+      />
+      <Page 
+        pages={pages} 
+        active={active} 
+        handlers={handlers}
+      />
     </>
   );
 }
